@@ -1,7 +1,10 @@
 ---
 networks:
-  proxy-traefik:
+#  proxy-traefik:
+#    external: true
+  monitoring-net:
     external: true
+#    external: true
 services:
   grafana:
     image: grafana/grafana-oss:10.2.2
@@ -10,13 +13,14 @@ services:
       - 2284:3000
     volumes:
       - /zfs-pool/grafana-data:/var/lib/grafana
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.grafana.entrypoints=web
-      - traefik.http.routers.grafana.rule=Host(`grafana.peter-seubert.de`)
-      - traefik.http.routers.grafana.entrypoints=websecure
-      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
-      - traefik.http.routers.grafana.tls=true
+#    labels:
+#      - traefik.enable=true
+#      - traefik.http.routers.grafana.entrypoints=web
+#      - traefik.http.routers.grafana.rule=Host(`grafana.peter-seubert.de`)
+#      - traefik.http.routers.grafana.entrypoints=websecure
+#      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+#      - traefik.http.routers.grafana.tls=true
     networks:
-      - proxy-traefik
-    restart: unless-stopped
+#      - proxy-traefik
+      - monitoring-net
+#    restart: unless-stopped

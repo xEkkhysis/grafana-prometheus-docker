@@ -13,26 +13,34 @@
 #     networks:
 #       - monitoring-net
 
-
-# networks:
-#   monitoring-net:
-#     driver: bridge
-version: '3.8'
+volumes:
+  prometheus-data:
+    driver: local
 services:
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v2.37.9
+    container_name: prometheus
+    user: root
     ports:
       - "9090:9090"
     volumes:
       - /zfs-pool/prometheus-data:/prometheus
+      - ./config/prometheus.yaml:/etc/prometheus/prometheus.yaml:ro
     command:
-      - --config.file=/etc/prometheus/prometheus.yml
-
-  node-exporter:
-    container_name: node-exporter
-    image: prom/node-exporter
+      - "--config.file=/etc/prometheus/prometheus.yaml"
+    networks:
+      - monitoring-net
+  node_exporter:
+    container_name: node_exporter
+    image: quay.io/prometheus/node-exporter:v1.5.0
     command: "--path.rootfs=/host"
-    ports:
-      - "9100:9100"
+#    ports:wd
+#      - "9100:9100"
+    pid: host
     volumes:
       - /:/host:ro,rslave
+    networks:
+      - monitoring-net
+networks:
+  monitoring-net:
+    external: true
